@@ -22,6 +22,6 @@ watchDirectory cfg path =
   performEventAsync $ ffor path $ \p cb -> liftIO $ void $ forkIO $
     FS.withManagerConf cfg $ \mgr -> do
       _ <- FS.watchTree mgr p (const True) cb
-      forever $ threadDelay 1000000
+      forever $ threadDelay maxBound
 
 
