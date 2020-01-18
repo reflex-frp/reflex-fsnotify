@@ -8,6 +8,9 @@ module Reflex.FSNotify
   ( watchDirectory
   , watchDir
   , watchTree
+  , wrapWatch
+  , listDirectories
+  , watchDirectoryTree
   ) where
 
 import Control.Concurrent
@@ -15,6 +18,11 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Reflex
 import qualified System.FSNotify as FS
+
+import Data.Set (Set)
+import qualified Data.Set as Set
+import System.Directory
+import System.FilePath ((</>))
 
 -- A type synonym to disambiguate Reflex 'Event's from 'System.FSNotify.Event'
 type FSEvent = FS.Event
@@ -55,3 +63,34 @@ watchTree
   -> FS.ActionPredicate
   -> m (Event t FSEvent)
 watchTree cfg path evFilter = wrapWatch (\mgr p -> FS.watchTree mgr p evFilter) cfg path
+
+listDirectories
+  :: FilePath
+  -> IO (Set FilePath)
+listDirectories start = do
+  start' <- canonicalizePath start
+  Set.insert start' <$> listDirectories' Set.empty start'
+  where
+    listDirectories' :: Set FilePath -> FilePath -> IO (Set FilePath)
+    listDirectories' seen dir0 = do
+      let canonicalize p = canonicalizePath $ dir0 </> p
+      contents <- mapM canonicalize =<< listDirectory dir0
+      dirs <- filterM doesDirectoryExist contents
+      let newDirs = filter (not . flip Set.member seen) dirs
+          newSeen = Set.union seen $ Set.fromList newDirs
+      allDirs <- mapM (listDirectories' newSeen) newDirs
+      return $ Set.unions $ Set.fromList dirs : allDirs
+
+-- | Like 'watchTree' except that it tries to avoid symlink loops and calls
+-- 'watchDir' on each directory found
+watchDirectoryTree
+  :: (Reflex t, TriggerEvent t m, PerformEvent t m, MonadIO (Performable m))
+  => FS.WatchConfig
+  -> Event t FilePath
+  -> FS.ActionPredicate
+  -> m (Event t FSEvent)
+watchDirectoryTree cfg root evFilter =
+  let f mgr p cb = do
+        dirs <- listDirectories p
+        mapM_ (\dir -> FS.watchDir mgr dir evFilter cb) dirs
+  in wrapWatch f cfg root
