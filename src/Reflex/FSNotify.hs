@@ -7,10 +7,12 @@ Description: Watch for filesystem changes in reflex
 module Reflex.FSNotify
   ( watchDirectory
   , watchDir
+  , watchDirs
   , watchTree
   , wrapWatch
   , listDirectories
   , watchDirectoryTree
+  , FSEvent
   ) where
 
 import Control.Concurrent
@@ -38,14 +40,14 @@ watchDirectory cfg path = watchDir cfg path (const True)
 
 wrapWatch
   :: (Reflex t, TriggerEvent t m, PerformEvent t m, MonadIO (Performable m))
-  => (FS.WatchManager -> FilePath -> FS.Action -> IO a)
+  => (FS.WatchManager -> pathinfo -> FS.Action -> IO a)
   -> FS.WatchConfig
-  -> Event t FilePath
+  -> Event t pathinfo
   -> m (Event t FSEvent)
 wrapWatch f cfg path =
   performEventAsync $ ffor path $ \p cb -> liftIO $ void $ forkIO $
     FS.withManagerConf cfg $ \mgr -> do
-      _ <- f mgr p cb -- FS.watchTree mgr p (const True) cb
+      _ <- f mgr p cb
       forever $ threadDelay 1000000
 
 watchDir
@@ -55,6 +57,15 @@ watchDir
   -> FS.ActionPredicate
   -> m (Event t FSEvent)
 watchDir cfg path evFilter = wrapWatch (\mgr p -> FS.watchDir mgr p evFilter) cfg path
+
+watchDirs
+  :: (Reflex t, TriggerEvent t m, PerformEvent t m, MonadIO (Performable m))
+  => FS.WatchConfig
+  -> Event t [FilePath]
+  -> FS.ActionPredicate
+  -> m (Event t FSEvent)
+watchDirs cfg path evFilter = wrapWatch (\mgr ps cb -> forM_ ps $ \p ->
+  FS.watchDir mgr p evFilter cb) cfg path
 
 watchTree
   :: (Reflex t, TriggerEvent t m, PerformEvent t m, MonadIO (Performable m))

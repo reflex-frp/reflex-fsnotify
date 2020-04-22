@@ -1,5 +1,10 @@
 # Revision history for reflex-fsnotify
 
+## 0.2.1.0
+
+* Add `watchDirs` to watch a list of directories
+* Generalize `wrapWatch` a little to make `watchDirs` possible
+
 ## 0.2.0.0
 
 * Deprecate `watchDirectory`
