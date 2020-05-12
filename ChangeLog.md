@@ -1,5 +1,9 @@
 # Revision history for reflex-fsnotify
 
+## Unreleased
+
+* Support GHC 8.8 and `reflex` 0.7.
+
 ## 0.2.1.0
 
 * Add `watchDirs` to watch a list of directories
