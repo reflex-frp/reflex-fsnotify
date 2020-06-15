@@ -1,8 +1,11 @@
 cabal-version: >=1.10
 name: reflex-fsnotify
 version: 0.2.1.1
-synopsis: reflex-frp interface for watching files
-description: Receive FRP events whenever files change.
+synopsis: Reflex FRP interface for watching files
+description:
+  Watch files and directories for changes using a functional-reactive interface!
+  .
+  <https://reflex-frp.org/>
 bug-reports: https://github.com/reflex-frp/reflex-fsnotify/issues
 license: BSD3
 license-file: LICENSE
