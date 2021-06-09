@@ -1,5 +1,9 @@
 # Revision history for reflex-fsnotify
 
+## Unreleased
+
+Support GHC 8.10
+
 ## 0.2.1.2
 
 * Support reflex 0.8
