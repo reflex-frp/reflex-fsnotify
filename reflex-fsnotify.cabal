@@ -1,6 +1,6 @@
 cabal-version: >=1.10
 name: reflex-fsnotify
-version: 0.2.1.2
+version: 0.2.1.3
 synopsis: Reflex FRP interface for watching files
 description:
   Watch files and directories for changes using a functional-reactive interface!
