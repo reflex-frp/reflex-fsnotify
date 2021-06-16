@@ -16,7 +16,7 @@ category: System, FRP
 build-type: Simple
 extra-source-files: ChangeLog.md
                     README.md
-tested-with: GHC ==8.10.4 || ==8.8.3 || ==8.6.5
+tested-with: GHC ==8.10.2 || ==8.8.4 || ==8.6.5
 
 library
   exposed-modules: Reflex.FSNotify
