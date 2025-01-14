@@ -1,5 +1,8 @@
 # Revision history for reflex-fsnotify
 
+## 0.3.0.1
+* Build with GHC 9.10
+
 ## 0.3.0.0
 
 * Require fsnotify >= 0.4, which has a breaking API change

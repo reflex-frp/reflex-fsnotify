@@ -1,6 +1,6 @@
 cabal-version:      >=1.10
 name:               reflex-fsnotify
-version:            0.3.0.0
+version:            0.3.0.1
 license:            BSD3
 license-file:       LICENSE
 copyright:          2020 Obsidian Systems LLC
